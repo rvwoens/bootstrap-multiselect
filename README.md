@@ -2,6 +2,16 @@
 
 [![Build Status](https://travis-ci.org/davidstutz/bootstrap-multiselect.svg?branch=master)](https://travis-ci.org/davidstutz/bootstrap-multiselect)
 
+### Fork that removes the knockout dependency 
+
+usage 
+```
+    yarn install https://github.com/rvwoens/bootstrap-multiselect.git
+    npm -i https://github.com/rvwoens/bootstrap-multiselect.git
+``` 
+
+
+
 Bootstrap Multiselect is a JQuery based plugin to provide an intuitive user interface for using select inputs with the multiple attribute present. Instead of a select a bootstrap button will be shown w dropdown menu containing the single options as checkboxes.
 
 Documentation, Examples, FAQ and License: [http://davidstutz.de/bootstrap-multiselect/](http://davidstutz.de/bootstrap-multiselect/).
