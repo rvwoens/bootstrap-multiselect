@@ -41,134 +41,37 @@
  * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
  * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-(function (root, factory) {
-    // check to see if 'knockout' AMD module is specified if using requirejs
-    // if (typeof define === 'function' && define.amd &&
-    //     typeof require === 'function' && typeof require.specified === 'function' && require.specified('knockout')) {
-    //
-    //     // AMD. Register as an anonymous module.
-    //     define(['jquery', 'knockout'], factory);
-    // } else {
+(function (factory) {
+    // knockout removed
+    if (typeof define === 'function' && define.amd ) {
+        // AMD. Register as an anonymous module.
+        define(['jquery'], factory);
+    }
+    else if (typeof module === 'object' && module.exports) {
+        // Node/CommonJS
+        module.exports = function (root, jQuery) {
+              if (jQuery === undefined) {
+                // require('jQuery') returns a factory that requires window to
+                // build a jQuery instance, we normalize how we use modules
+                // that require this pattern but the window provided is a noop
+                // if it's defined (how jquery works)
+                if (typeof window !== 'undefined') {
+                  jQuery = require('jquery');
+                }
+                else {
+                  jQuery = require('jquery')(root);
+                }
+              }
+              factory(jQuery);
+              return jQuery;
+        };
+    } else {
         // Browser globals
-        factory(root.jQuery, root.ko);
-    //}
+        factory(jQuery);
+    }
+
 })(this, function ($, ko) {
     "use strict";// jshint ;_;
-
-    if (typeof ko !== 'undefined' && ko.bindingHandlers && !ko.bindingHandlers.multiselect) {
-        ko.bindingHandlers.multiselect = {
-            after: ['options', 'value', 'selectedOptions', 'enable', 'disable'],
-
-            init: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-                var $element = $(element);
-                var config = ko.toJS(valueAccessor());
-
-                $element.multiselect(config);
-
-                if (allBindings.has('options')) {
-                    var options = allBindings.get('options');
-                    if (ko.isObservable(options)) {
-                        ko.computed({
-                            read: function() {
-                                options();
-                                setTimeout(function() {
-                                    var ms = $element.data('multiselect');
-                                    if (ms)
-                                        ms.updateOriginalOptions();//Not sure how beneficial this is.
-                                    $element.multiselect('rebuild');
-                                }, 1);
-                            },
-                            disposeWhenNodeIsRemoved: element
-                        });
-                    }
-                }
-
-                //value and selectedOptions are two-way, so these will be triggered even by our own actions.
-                //It needs some way to tell if they are triggered because of us or because of outside change.
-                //It doesn't loop but it's a waste of processing.
-                if (allBindings.has('value')) {
-                    var value = allBindings.get('value');
-                    if (ko.isObservable(value)) {
-                        ko.computed({
-                            read: function() {
-                                value();
-                                setTimeout(function() {
-                                    $element.multiselect('refresh');
-                                }, 1);
-                            },
-                            disposeWhenNodeIsRemoved: element
-                        }).extend({ rateLimit: 100, notifyWhenChangesStop: true });
-                    }
-                }
-
-                //Switched from arrayChange subscription to general subscription using 'refresh'.
-                //Not sure performance is any better using 'select' and 'deselect'.
-                if (allBindings.has('selectedOptions')) {
-                    var selectedOptions = allBindings.get('selectedOptions');
-                    if (ko.isObservable(selectedOptions)) {
-                        ko.computed({
-                            read: function() {
-                                selectedOptions();
-                                setTimeout(function() {
-                                    $element.multiselect('refresh');
-                                }, 1);
-                            },
-                            disposeWhenNodeIsRemoved: element
-                        }).extend({ rateLimit: 100, notifyWhenChangesStop: true });
-                    }
-                }
-
-                var setEnabled = function (enable) {
-                    setTimeout(function () {
-                        if (enable)
-                            $element.multiselect('enable');
-                        else
-                            $element.multiselect('disable');
-                    });
-                };
-
-                if (allBindings.has('enable')) {
-                    var enable = allBindings.get('enable');
-                    if (ko.isObservable(enable)) {
-                        ko.computed({
-                            read: function () {
-                                setEnabled(enable());
-                            },
-                            disposeWhenNodeIsRemoved: element
-                        }).extend({ rateLimit: 100, notifyWhenChangesStop: true });
-                    } else {
-                        setEnabled(enable);
-                    }
-                }
-
-                if (allBindings.has('disable')) {
-                    var disable = allBindings.get('disable');
-                    if (ko.isObservable(disable)) {
-                        ko.computed({
-                            read: function () {
-                                setEnabled(!disable());
-                            },
-                            disposeWhenNodeIsRemoved: element
-                        }).extend({ rateLimit: 100, notifyWhenChangesStop: true });
-                    } else {
-                        setEnabled(!disable);
-                    }
-                }
-
-                ko.utils.domNodeDisposal.addDisposeCallback(element, function() {
-                    $element.multiselect('destroy');
-                });
-            },
-
-            update: function(element, valueAccessor, allBindings, viewModel, bindingContext) {
-                var $element = $(element);
-                var config = ko.toJS(valueAccessor());
-
-                $element.multiselect('setOptions', config);
-                $element.multiselect('rebuild');
-            }
-        };
-    }
 
     function forEach(array, callback) {
         for (var index = 0; index < array.length; ++index) {
