@@ -6,7 +6,7 @@
 
 usage 
 ```
-    yarn install https://github.com/rvwoens/bootstrap-multiselect.git
+    yarn add https://github.com/rvwoens/bootstrap-multiselect.git
     npm -i https://github.com/rvwoens/bootstrap-multiselect.git
 ``` 
 
